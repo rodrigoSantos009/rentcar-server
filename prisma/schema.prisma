@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String
+  password String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  car_rentals Rentals[] @relation("user")
+
+  @@map("users")
+} 
+
+model Car {
+  id String @id @default(uuid())
+  model String
+  year Int
+  doors Int
+  passengers Int
+  rentalPrice Float
+  available Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  car_rentals Rentals[] @relation("car")
+  car_image CarImage?
+
+  @@map("cars")
+}
+
+model CarImage {
+  id String @id @default(uuid())
+  url String
+
+  car Car @relation(fields: [car_id], references: [id])
+  car_id String @unique
+  
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("car_image")
+}
+
+model Rentals {
+  id String @id @default(uuid())
+  rented_at DateTime
+  returned_at DateTime?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  user User @relation("user", fields: [user_id], references: [id])
+  user_id String
+
+  car Car @relation("car", fields: [car_id], references: [id])
+  car_id String
+
+  @@index([car_id, rented_at], name: "car_rental_unique_idx")
+
+  @@map("car_rentals")
+}
