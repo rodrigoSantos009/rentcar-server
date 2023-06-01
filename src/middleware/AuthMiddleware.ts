@@ -23,7 +23,7 @@ export const AuthMiddleware = async (
   try {
     const { email, exp } = jwt.verify(
       token,
-      process.env.JWT_PASS ?? ""
+      "4shknqImPa4zcKC5hk4JSetUziD1DDWuux7a3"
     ) as JWTPayload;
 
     const user = await userUseCase.getUserByEmail(email);
